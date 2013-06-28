@@ -5,6 +5,10 @@ target/
 R.java
 .settings/
 *.class
+apidocs/
+examples/
+javadoc/
+tutorial/
 
 local.properties
 *.apk
