@@ -13,12 +13,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.UiSettings;
@@ -28,7 +28,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.LatLng;
 
 
-public class GpsMapActivity extends FragmentActivity  implements
+public class GpsMapActivity extends SherlockFragmentActivity  implements
 IGpsLoggerServiceClient, View.OnClickListener, IActionListener {
 
 	private final static String TAG = "GpsMapActivity";
@@ -42,6 +42,7 @@ IGpsLoggerServiceClient, View.OnClickListener, IActionListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.gps_map);
 		firstStart = true;
 		setUpMapIfNeeded();
@@ -109,24 +110,61 @@ IGpsLoggerServiceClient, View.OnClickListener, IActionListener {
         mUiSettings = mMap.getUiSettings();
         mUiSettings.setZoomControlsEnabled(true);
         mUiSettings.setCompassEnabled(true);
-        //mUiSettings.setMyLocationButtonEnabled(true);
+        mUiSettings.setMyLocationButtonEnabled(true);
         mUiSettings.setScrollGesturesEnabled(true);
         mUiSettings.setZoomGesturesEnabled(true);
         mUiSettings.setTiltGesturesEnabled(true);
         mUiSettings.setRotateGesturesEnabled(true);
         //mUiSettings.setAllGesturesEnabled(true);
-        
-        
-        
     }
 	/**
 	 * Called when the menu is created.
 	 */
-
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.mapmenu, (android.view.Menu) menu);
-		//getActionBar().setDisplayShowTitleEnabled(false);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+		com.actionbarsherlock.view.MenuInflater inflater = getSupportMenuInflater();
+		inflater.inflate(R.menu.mapmenu, menu);
+		getSupportActionBar().setDisplayShowTitleEnabled(false);
 		return true;
+	}
+	/**
+	 * Called when one of the menu items is selected.
+	 */
+	public boolean onOptionsItemSelected(MenuItem item) {
+		int itemId = item.getItemId();
+		Utilities.LogInfo("Option item selected - "
+				+ String.valueOf(item.getTitle()));
+		switch (itemId) {
+		case android.R.id.home:
+            Intent intent = new Intent(this, GpsMainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+
+            break;
+		case R.id.mapLock:
+			if (Session.getLockCamera()){
+				Session.setLockCamera(false);
+			}
+			else {
+				Session.setLockCamera(true);
+			}
+			break;
+		case R.id.mapRoad:
+			mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+			break;
+		case R.id.mapSatellite:
+			mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+			break;
+		case R.id.mapHybrid:
+			mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);			
+			break;
+		case R.id.mapTerrain:
+			mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+			break;
+		}
+		
+		
+		return false;
 	}
 	
 	@Override
@@ -186,7 +224,9 @@ IGpsLoggerServiceClient, View.OnClickListener, IActionListener {
 	    .bearing(bearingDegrees)                // Sets the orientation of the camera to east
 	    .tilt(30)                   // Sets the tilt of the camera to 30 degrees
 	    .build();                   // Creates a CameraPosition from the builder
-		mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+		if (Session.getLockCamera()){
+			mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+		}
 		
 		drawPolyline(loc);
 		typeText(loc);

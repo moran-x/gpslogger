@@ -365,5 +365,11 @@
     <string name="action_settings">Settings</string>
     <string name="satellite_info">Satellite Radar</string>
     <string name="mnu_map_view">View</string>
+    <string name="mnu_map_lock">Unlock Camera</string>
+    <string name="mnu_map_satellite">Satellite</string>
+    <string name="mnu_map_road">Road</string>
+    <string name="mnu_map_hybrid">Hybrid</string>
+    <string name="mnu_map_terrain">Terrain</string>
+    <string name="mnu_map_layers">Layers</string>
 
 </resources>

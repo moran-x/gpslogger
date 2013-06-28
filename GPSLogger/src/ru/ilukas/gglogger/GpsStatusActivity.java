@@ -33,7 +33,10 @@ import android.widget.GridView;
 import android.widget.TextView;
 import ru.ilukas.gglogger.common.IActionListener;
 import ru.ilukas.gglogger.common.Session;
+import ru.ilukas.gglogger.common.Utilities;
+
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.MenuItem;
 
 public class GpsStatusActivity extends SherlockActivity implements
 		IGpsLoggerServiceClient, View.OnClickListener, IActionListener {
@@ -121,6 +124,19 @@ public class GpsStatusActivity extends SherlockActivity implements
 	private void UnbindService() {
 		Log.d(TAG, "GpsStatusActivity unBindService - binding now");
 		unbindService(gpsServiceConnection);
+	}
+	public boolean onOptionsItemSelected(MenuItem item) {
+		int itemId = item.getItemId();
+		Utilities.LogInfo("Option item selected - "
+				+ String.valueOf(item.getTitle()));
+		switch (itemId) {
+		case android.R.id.home:
+            Intent intent = new Intent(this, GpsMainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            break;
+		}
+		return false;
 	}
 
 	public void DisplaySatelliteInfo(Location loc) {
@@ -270,6 +286,7 @@ public class GpsStatusActivity extends SherlockActivity implements
 	public void onCreate(Bundle icicle) {
 		Log.d(TAG, "GpsStatusActivity onCreate");
 		super.onCreate(icicle);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		mRes = getResources();
 		setContentView(R.layout.gps_status);

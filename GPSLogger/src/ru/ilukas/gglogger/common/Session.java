@@ -54,6 +54,7 @@ public class Session extends Application
     private static int retryTimeout=0;
     private static boolean armedForNextPoint;
     private static ArrayList<LatLng> pathPoints = new ArrayList<LatLng>();
+    private static boolean lockCamera = true;
 
     public static boolean isSinglePointMode()
     {
@@ -432,6 +433,14 @@ public class Session extends Application
     public static  ArrayList<LatLng> getLatLonList()
     {
     	return pathPoints;
+    }
+    public static void setLockCamera(boolean lock)
+    {
+    	lockCamera = lock;
+    }
+    public static boolean getLockCamera()
+    {
+    	return lockCamera;
     }
 
 }

@@ -23,8 +23,8 @@
     </item><item android:id="@+id/mnuMore" android:title="@string/menu_more" android:icon="@drawable/ic_menu_more" android:showAsAction="always" >
         <menu>
             <item android:id="@+id/mnuSatInfo" android:title="@string/menu_satelite_info" android:icon="@drawable/ic_menu_satellite"/>
-            <item android:id="@+id/mnuMap" android:title="@string/menu_map" android:icon="@drawable/ic_menu_globe"/>
-            <item android:id="@+id/mnuSatRadar" android:title="@string/menu_satellite_radar"/>
+            <item android:id="@+id/mnuMap" android:title="@string/menu_map" android:icon="@drawable/ic_menu_mapmode"/>
+            <item android:id="@+id/mnuSatRadar" android:title="@string/menu_satellite_radar" android:icon="@drawable/ic_menu_compass"/>
         </menu>
     </item>
 

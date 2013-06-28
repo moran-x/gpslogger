@@ -1,4 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <menu xmlns:android="http://schemas.android.com/apk/res/android">
-        <item android:id="@+id/mapView" android:title="@string/mnu_map_view"></item>
-    </menu>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/mapLayers"
+        android:icon="@drawable/ic_menu_layers"
+        android:showAsAction="always"
+        android:title="@string/mnu_map_layers">
+        <menu>
+            <item
+                android:id="@+id/mapRoad"
+                android:icon="@drawable/ic_menu_normal"
+                android:title="@string/mnu_map_road">
+            </item>
+            <item android:id="@+id/mapSatellite" android:title="@string/mnu_map_satellite" android:icon="@drawable/ic_menu_satellite" /><item
+                android:id="@+id/mapHybrid"
+                android:icon="@drawable/ic_menu_hybrid"
+                android:title="@string/mnu_map_hybrid">
+            </item>
+            <item
+                android:id="@+id/mapTerrain"
+                android:icon="@drawable/ic_menu_terrain"
+                android:title="@string/mnu_map_terrain">
+            </item>
+            
+        </menu>
+    </item>
+    <item
+        android:id="@+id/mapLock"
+        android:icon="@drawable/ic_menu_lock"
+        android:title="@string/mnu_map_lock">
+    </item>
+
+</menu>

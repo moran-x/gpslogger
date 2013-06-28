@@ -21,8 +21,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -36,8 +39,10 @@ import android.view.View;
 
 import ru.ilukas.gglogger.common.IActionListener;
 import ru.ilukas.gglogger.common.Session;
+import ru.ilukas.gglogger.common.Utilities;
 
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.MenuItem;
 
 public class GpsSkyActivity extends SherlockActivity implements
 IGpsLoggerServiceClient, View.OnClickListener, IActionListener {
@@ -71,7 +76,7 @@ IGpsLoggerServiceClient, View.OnClickListener, IActionListener {
     @Override
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         mSkyView = new GpsSkyView(this);
         setContentView(mSkyView);
@@ -124,22 +129,20 @@ IGpsLoggerServiceClient, View.OnClickListener, IActionListener {
 		Log.d(TAG, "GpsSkyActivity unBindService - binding now");
 		unbindService(gpsServiceConnection);
 	}
-
-    /*public void onGpsStatusChanged(int event, GpsStatus status) {
-        switch (event) {
-            case GpsStatus.GPS_EVENT_STARTED:
-                mSkyView.setStarted();
-                break;
-
-            case GpsStatus.GPS_EVENT_STOPPED:
-                mSkyView.setStopped();
-                break;
-
-            case GpsStatus.GPS_EVENT_SATELLITE_STATUS:
-                mSkyView.setSats(status);
-                break;
-        }
-    }*/
+	
+	public boolean onOptionsItemSelected(MenuItem item) {
+		int itemId = item.getItemId();
+		Utilities.LogInfo("Option item selected - "
+				+ String.valueOf(item.getTitle()));
+		switch (itemId) {
+		case android.R.id.home:
+            Intent intent = new Intent(this, GpsMainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            break;
+		}
+		return false;
+	}
 
     private static class GpsSkyView extends View implements SensorEventListener {
         private Paint mHorizonActiveFillPaint, mHorizonInactiveFillPaint, mHorizonStrokePaint,
@@ -216,35 +219,24 @@ IGpsLoggerServiceClient, View.OnClickListener, IActionListener {
             }
 
     		for (int i = 0; i < info[0].length; i++) {
-    			//Log.d(TAG, "setSats FOR");
-    			//int prn = (int) info[0][i];
-                //int prnBit = (1 << (prn - 1));	
                 mSnrs[mSvCount] = (float) info[1][i];
                 mElevs[mSvCount] = (float) info[2][i];
                 mAzims[mSvCount] = (float) info[3][i];
                 mSvCount++;
     		}
-        	
-           /* Iterator<GpsSatellite> satellites = status.getSatellites().iterator();
-
-            if (mSnrs == null) {
-                int length = status.getMaxSatellites();
-                mSnrs = new float[length];
-                mElevs = new float[length];
-                mAzims = new float[length];
-            }
-
-            mSvCount = 0;
-            while (satellites.hasNext()) {
-                GpsSatellite satellite = satellites.next();
-                mSnrs[mSvCount] = satellite.getSnr();
-                mElevs[mSvCount] = satellite.getElevation();
-                mAzims[mSvCount] = satellite.getAzimuth();
-                mSvCount++;
-            }*/
-
             mStarted = true;
             invalidate();
+        }
+        private void loadCompas (Canvas canvas, float centerX){
+        	Bitmap mBitmap = null;
+			if(mBitmap == null){
+                mBitmap =  Bitmap.createBitmap (1, 1, Bitmap.Config.ARGB_8888);;
+            }
+        	mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.compass_rose);//  decodeFile(R.drawable.compass_rose);
+        	Matrix matrix = new Matrix();
+        	matrix.setRotate(-mOrientation,mBitmap.getWidth()/2,mBitmap.getHeight()/2);
+        	//canvas.rotate(mOrientation,mBitmap.getWidth()/2,mBitmap.getHeight()/2);
+        	canvas.drawBitmap (mBitmap, matrix, new Paint());
         }
 
         private void drawLine(Canvas c, float x1, float y1, float x2, float y2) {
@@ -266,6 +258,8 @@ IGpsLoggerServiceClient, View.OnClickListener, IActionListener {
             float Y2 = -(-sin * x2 + cos * y2) + centerY;
 
             c.drawLine(X1, Y1, X2, Y2, mGridStrokePaint);
+            loadCompas(c, centerX);
+            
         }
 
         private void drawHorizon(Canvas c, int s) {
@@ -278,6 +272,7 @@ IGpsLoggerServiceClient, View.OnClickListener, IActionListener {
             c.drawCircle(radius, radius, elevationToRadius(s, 30.0f), mGridStrokePaint);
             c.drawCircle(radius, radius, elevationToRadius(s,  0.0f), mGridStrokePaint);
             c.drawCircle(radius, radius, radius, mHorizonStrokePaint);
+            
         }
 
         private void drawSatellite(Canvas c, int s, float elev, float azim, float snr) {
@@ -371,7 +366,9 @@ IGpsLoggerServiceClient, View.OnClickListener, IActionListener {
             h = canvas.getHeight();
             s = (w < h) ? w : h;
 
+            
             drawHorizon(canvas, s);
+            
 
             if (mElevs != null) {
             	//Log.d(TAG, "onDraw IF");
