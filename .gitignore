@@ -5,10 +5,11 @@ target/
 R.java
 .settings/
 *.class
-apidocs/
-examples/
-javadoc/
-tutorial/
+lib/org.apache.commons.net/apidocs/
+lib/org.apache.commons.net/examples/
+lib/org.apache.http.entity/examples/
+lib/org.apache.http.entity/javadoc/
+lib/org.apache.http.entity/tutorial/
 
 local.properties
 *.apk
